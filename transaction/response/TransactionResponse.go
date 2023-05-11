@@ -22,6 +22,7 @@ type CreateTransactionResponse struct {
 	QrCodeString     string `json:"qrCodeString"`
 	Status           string `json:"status"`
 	Time             string `json:"time"`
+	AccountName      string `json:"accountName"`
 }
 type QueryTransactionResponse struct {
 	Status           string `json:"status"`

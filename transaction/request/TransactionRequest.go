@@ -22,7 +22,7 @@ type CreateTransactionRequest struct {
 	CustomerInfo     Customer `json:"customerInfo"`
 	FailUrl          string   `json:"failUrl"`
 	RedirectAfter    int      `json:"redirectAfter"`
-	BankAccountId    string   `json:"bankAccountId"`
+	BankAccountNo    string   `json:"bankAccountNo"`
 }
 
 type QueryTransactionRequest struct {

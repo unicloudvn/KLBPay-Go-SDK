@@ -1,4 +1,4 @@
-module kpay_sdk
+module github.com/taiwd123/kpay_sdk
 
 go 1.20
 

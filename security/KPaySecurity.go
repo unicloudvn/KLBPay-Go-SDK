@@ -15,9 +15,9 @@ import (
 	"strings"
 	"time"
 
-	kpay_config "github.com/taiwd123/kpay_sdk/config"
-	kpay_exception "github.com/taiwd123/kpay_sdk/exception"
-	kpay_model "github.com/taiwd123/kpay_sdk/transaction/model"
+	kpay_config "github.com/unicloudvn/KLBPay-Go-SDK/config"
+	kpay_exception "github.com/unicloudvn/KLBPay-Go-SDK/exception"
+	kpay_model "github.com/unicloudvn/KLBPay-Go-SDK/transaction/model"
 )
 
 func SignData(data string, clientId string, timestamp int64, secretKey string) string {

@@ -1,5 +1,7 @@
-module github.com/taiwd123/kpay_sdk
+module github.com/unicloudvn/KLBPay-Go-SDK
 
-go 1.20
+go 1.18
 
-require github.com/joho/godotenv v1.5.1
+require (
+	github.com/joho/godotenv v1.5.1
+)

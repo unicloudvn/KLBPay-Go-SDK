@@ -15,14 +15,69 @@ type KPayConfig struct {
 	KPayHost         string
 }
 
-func (config KPayConfig) Init() KPayConfig {
-	godotenv.Load()
+type KPayConfigOption func(*KPayConfig)
 
-	config.ClientId = os.Getenv("Client_Id")
-	config.SecretKey = os.Getenv("Secret_Key")
-	config.EncryptKey = os.Getenv("Encrypt_Key")
-	config.MaxTimeStampDiff, _ = strconv.ParseInt(os.Getenv("Max_Timestamp_Diff"), 10, 64)
-	config.KPayHost = os.Getenv("Kpay_Host")
+func NewKPayConfig(opts ...KPayConfigOption) *KPayConfig {
+	// Here we can do any initialization for all options, then the provided parameters can overwrite them.
+	uCtx := KPayConfig{
+		MaxTimeStampDiff: 1800,
+		KPayHost:         "https://api-staging.kienlongbank.co/pay",
+	}
+	for _, o := range opts {
+		o(&uCtx)
+	}
+	return &uCtx
+}
 
-	return config
+// With ClientId
+func WithClientId(clientId string) KPayConfigOption { // HL
+	return func(c *KPayConfig) {
+		c.ClientId = clientId
+	}
+}
+
+// With SecretKey
+func WithSecretKey(secretKey string) KPayConfigOption { // HL
+	return func(c *KPayConfig) {
+		c.SecretKey = secretKey
+	}
+}
+
+// With EncryptKey
+func WithEncryptKey(encryptKey string) KPayConfigOption { // HL
+	return func(c *KPayConfig) {
+		c.EncryptKey = encryptKey
+	}
+}
+
+// With MaxTimeStampDiff
+func WithMaxTimeStampDiff(maxTimeStampDiff int64) KPayConfigOption { // HL
+	return func(c *KPayConfig) {
+		c.MaxTimeStampDiff = maxTimeStampDiff
+	}
+}
+
+// With KPayHost
+func WithKPayHost(kPayHost string) KPayConfigOption { // HL
+	return func(c *KPayConfig) {
+		c.KPayHost = kPayHost
+	}
+}
+
+func Init() *KPayConfig {
+	err := godotenv.Load()
+	if err != nil {
+		return &KPayConfig{}
+	}
+	config := KPayConfig{
+		MaxTimeStampDiff: 1800,
+		KPayHost:         "https://api-staging.kienlongbank.co/pay",
+	}
+	config.ClientId = os.Getenv("KLB_Client_Id")
+	config.SecretKey = os.Getenv("KLB_Secret_Key")
+	config.EncryptKey = os.Getenv("KLB_Encrypt_Key")
+	config.MaxTimeStampDiff, _ = strconv.ParseInt(os.Getenv("KLBMax_Timestamp_Diff"), 10, 64)
+	config.KPayHost = os.Getenv("KLB_Kpay_Host")
+
+	return &config
 }

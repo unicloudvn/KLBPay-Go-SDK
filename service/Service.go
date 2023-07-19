@@ -5,14 +5,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"net/http"
-	"strconv"
-
 	kpay_config "kpay_sdk/config"
 	kpay_security "kpay_sdk/security"
 	kpay_model "kpay_sdk/transaction/model"
 	kpay_request "kpay_sdk/transaction/request"
 	kpay_response "kpay_sdk/transaction/response"
+	"net/http"
+	"strconv"
 )
 
 var (
@@ -21,7 +20,7 @@ var (
 	x_api_validate = "x-api-validate"
 )
 
-func excute(url string, message *kpay_model.Message) (kpay_model.Message, error) {
+func execute(url string, message *kpay_model.Message) (kpay_model.Message, error) {
 	bodyEncrypt := kpay_request.BodyEncryptRequest{
 		Data: message.EncryptData,
 	}
@@ -64,31 +63,29 @@ func excute(url string, message *kpay_model.Message) (kpay_model.Message, error)
 	}, nil
 }
 
-func callApi[S any, T any](url string, req S, res T) (any, error) {
-	config := kpay_config.KPayConfig.Init(kpay_config.KPayConfig{})
-	messageRequest, err := kpay_security.Encode(&config, req)
+func callApi[S any, T any](kPayConfig *kpay_config.KPayConfig, url string, req S, res T) (any, error) {
+	messageRequest, err := kpay_security.Encode(kPayConfig, req)
 	if err != nil {
 		return nil, err
 	}
 
-	messageResponse, err := excute(url, messageRequest)
+	messageResponse, err := execute(url, messageRequest)
 	if err != nil {
 		return nil, err
 	}
 
-	result, err := kpay_security.Decode(&config, &messageResponse, &res)
+	result, err := kpay_security.Decode(kPayConfig, &messageResponse, &res)
 	if err != nil {
 		return nil, err
 	}
 	return result, nil
 }
 
-func CreateTransaction(request kpay_request.CreateTransactionRequest) (kpay_response.CreateTransactionResponse, error) {
-	config := kpay_config.KPayConfig.Init(kpay_config.KPayConfig{})
-	url := config.KPayHost + "/api/payment/v1/create"
+func CreateTransaction(kPayConfig *kpay_config.KPayConfig, request kpay_request.CreateTransactionRequest) (kpay_response.CreateTransactionResponse, error) {
+	url := kPayConfig.KPayHost + "/api/payment/v1/create"
 
 	var createRes kpay_response.CreateTransactionResponse
-	_, err := callApi(url, &request, &createRes)
+	_, err := callApi(kPayConfig, url, &request, &createRes)
 	if err != nil {
 		return kpay_response.CreateTransactionResponse{}, err
 	}
@@ -96,12 +93,11 @@ func CreateTransaction(request kpay_request.CreateTransactionRequest) (kpay_resp
 	return createRes, nil
 }
 
-func CancelTranasction(request kpay_request.CancelTransactionRequest) (kpay_response.CancelTransactionResponse, error) {
-	config := kpay_config.KPayConfig.Init(kpay_config.KPayConfig{})
-	url := config.KPayHost + "/api/payment/v1/cancel"
+func CancelTransaction(kPayConfig *kpay_config.KPayConfig, request kpay_request.CancelTransactionRequest) (kpay_response.CancelTransactionResponse, error) {
+	url := kPayConfig.KPayHost + "/api/payment/v1/cancel"
 
 	var cancelRes kpay_response.CancelTransactionResponse
-	_, err := callApi(url, &request, &cancelRes)
+	_, err := callApi(kPayConfig, url, &request, &cancelRes)
 	if err != nil {
 		return kpay_response.CancelTransactionResponse{}, err
 	}
@@ -109,12 +105,11 @@ func CancelTranasction(request kpay_request.CancelTransactionRequest) (kpay_resp
 	return cancelRes, nil
 }
 
-func QueryTranasction(request kpay_request.QueryTransactionRequest) (kpay_response.QueryTransactionResponse, error) {
-	config := kpay_config.KPayConfig.Init(kpay_config.KPayConfig{})
-	url := config.KPayHost + "/api/payment/v1/check"
+func QueryTransaction(kPayConfig *kpay_config.KPayConfig, request kpay_request.QueryTransactionRequest) (kpay_response.QueryTransactionResponse, error) {
+	url := kPayConfig.KPayHost + "/api/payment/v1/check"
 
 	var queryRes kpay_response.QueryTransactionResponse
-	_, err := callApi(url, &request, &queryRes)
+	_, err := callApi(kPayConfig, url, &request, &queryRes)
 	if err != nil {
 		return kpay_response.QueryTransactionResponse{}, err
 	}

@@ -83,12 +83,12 @@ func AesDecrypt(ciphertext string, key string) (string, error) {
 
 	mode.CryptBlocks(plaintext, cipherDecode)
 
-	plaintext = pkcs5Unpadding(plaintext)
+	plaintext = pkcs5UnPadding(plaintext)
 
 	return string(plaintext), nil
 }
 
-func Encode(kPayConfig *kpay_config.KPayConfig, data interface{}) (*kpay_model.Message, error) {
+func Encode(kPayConfig *kpay_config.KPayConfig, data any) (*kpay_model.Message, error) {
 	timestamp := time.Now().UnixNano() / int64(time.Millisecond)
 
 	if data == nil {
@@ -146,11 +146,11 @@ func pkcs5Padding(plaintext []byte, blockSize int) []byte {
 	return append(plaintext, padtext...)
 }
 
-func pkcs5Unpadding(plaintext []byte) []byte {
+func pkcs5UnPadding(plaintext []byte) []byte {
 	plaintext = []byte(removeNullChars(string(plaintext)))
 	length := len(plaintext)
-	unpadding := int(plaintext[length-1])
-	return plaintext[:(length - unpadding)]
+	unPadding := int(plaintext[length-1])
+	return plaintext[:(length - unPadding)]
 }
 
 func removeNullChars(jsonString string) string {

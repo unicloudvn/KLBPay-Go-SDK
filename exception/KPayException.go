@@ -9,7 +9,6 @@ var (
 	// error common
 	Success           = &kPayResponseCode{0, "Success"}
 	Failed            = &kPayResponseCode{1, "Failed"}
-	CallApiFailed     = &kPayResponseCode{2, "Call api to service failed"}
 	InvalidParam      = &kPayResponseCode{2, "Invalid param"}
 	DecodeKeyFailed   = &kPayResponseCode{3, "Decode key failed"}
 	CreateCipherError = &kPayResponseCode{4, "Create block cipher error"}

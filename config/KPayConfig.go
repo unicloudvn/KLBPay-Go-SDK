@@ -1,12 +1,5 @@
 package kpay_config
 
-import (
-	"os"
-	"strconv"
-
-	"github.com/joho/godotenv"
-)
-
 type KPayConfig struct {
 	ClientId         string
 	SecretKey        string
@@ -62,22 +55,4 @@ func WithKPayHost(kPayHost string) KPayConfigOption { // HL
 	return func(c *KPayConfig) {
 		c.KPayHost = kPayHost
 	}
-}
-
-func Init() *KPayConfig {
-	err := godotenv.Load()
-	if err != nil {
-		return &KPayConfig{}
-	}
-	config := KPayConfig{
-		MaxTimeStampDiff: 1800,
-		KPayHost:         "https://api-staging.kienlongbank.co/pay",
-	}
-	config.ClientId = os.Getenv("KLB_Client_Id")
-	config.SecretKey = os.Getenv("KLB_Secret_Key")
-	config.EncryptKey = os.Getenv("KLB_Encrypt_Key")
-	config.MaxTimeStampDiff, _ = strconv.ParseInt(os.Getenv("KLBMax_Timestamp_Diff"), 10, 64)
-	config.KPayHost = os.Getenv("KLB_Kpay_Host")
-
-	return &config
 }

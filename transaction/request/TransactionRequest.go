@@ -48,7 +48,7 @@ type DisableVirtualAccountRequest struct {
 type GetTransactionRequest struct {
 	Size          int32  `json:"size"`
 	Page          int32  `json:"page"`
-	Order         int64  `json:"order"`
+	Order         *int64 `json:"order"`
 	BankAccountNo string `json:"bankAccountNo"`
 	FromDate      string `json:"fromDate"`
 	ToDate        string `json:"toDate"`

@@ -1,7 +1,5 @@
 package kpay_response
 
-import "time"
-
 type TransactionStatus int
 
 const (
@@ -61,10 +59,10 @@ type DisableVirtualAccountResponse struct {
 type PayTransactionResponse struct {
 	Id               string       `json:"id"`
 	Status           string       `json:"status"`
-	Amount           string       `json:"amount"`
+	Amount           int64        `json:"amount"`
 	RefTransactionId string       `json:"refTransactionId"`
-	CreateDateTime   time.Time    `json:"createDateTime"`
-	CompleteTime     time.Time    `json:"completeTime"`
+	CreateDateTime   string       `json:"createDateTime"`
+	CompleteTime     string       `json:"completeTime"`
 	VirtualAccount   string       `json:"virtualAccount"`
 	Description      string       `json:"description"`
 	PaymentType      PAYMENT_TYPE `json:"paymentType"`

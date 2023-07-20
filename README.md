@@ -1,7 +1,3 @@
----
-sidebar_position: 5
----
-
 # KPAY SDK GOLANG
 
 Thư viện người dùng tích hợp KLBPay vào hệ thống thanh toán của Merchant

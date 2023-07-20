@@ -3,6 +3,7 @@ package service
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	kpay_config "github.com/unicloudvn/KLBPay-Go-SDK/config"
 	kpay_security "github.com/unicloudvn/KLBPay-Go-SDK/security"
@@ -43,6 +44,10 @@ func execute(url string, message *kpay_model.Message) (kpay_model.Message, error
 	res, err := client.Do(req)
 	if err != nil {
 		return kpay_model.Message{}, err
+	}
+	statusOK := res.StatusCode >= 200 && res.StatusCode < 300
+	if !statusOK {
+		return kpay_model.Message{}, errors.New(res.Status)
 	}
 
 	defer res.Body.Close()
@@ -112,6 +117,42 @@ func QueryTransaction(kPayConfig *kpay_config.KPayConfig, request kpay_request.Q
 	_, err := callApi(kPayConfig, url, &request, &queryRes)
 	if err != nil {
 		return kpay_response.QueryTransactionResponse{}, err
+	}
+
+	return queryRes, nil
+}
+
+func CreateVirtualAccount(kPayConfig *kpay_config.KPayConfig, request kpay_request.CreateVirtualAccountRequest) (kpay_response.CreateVirtualAccountResponse, error) {
+	url := kPayConfig.KPayHost + "/api/payment/v1/virtualAccount/enable"
+
+	var queryRes kpay_response.CreateVirtualAccountResponse
+	_, err := callApi(kPayConfig, url, &request, &queryRes)
+	if err != nil {
+		return kpay_response.CreateVirtualAccountResponse{}, err
+	}
+
+	return queryRes, nil
+}
+
+func DisableVirtualAccount(kPayConfig *kpay_config.KPayConfig, request kpay_request.DisableVirtualAccountRequest) (kpay_response.DisableVirtualAccountResponse, error) {
+	url := kPayConfig.KPayHost + "/api/payment/v1/virtualAccount/disable"
+
+	var queryRes kpay_response.DisableVirtualAccountResponse
+	_, err := callApi(kPayConfig, url, &request, &queryRes)
+	if err != nil {
+		return kpay_response.DisableVirtualAccountResponse{}, err
+	}
+
+	return queryRes, nil
+}
+
+func GetTransaction(kPayConfig *kpay_config.KPayConfig, request kpay_request.GetTransactionRequest) (kpay_response.PaginateResponse[kpay_response.PayTransactionResponse], error) {
+	url := kPayConfig.KPayHost + "/api/payment/v1/getTransaction"
+
+	var queryRes kpay_response.PaginateResponse[kpay_response.PayTransactionResponse]
+	_, err := callApi(kPayConfig, url, &request, &queryRes)
+	if err != nil {
+		return kpay_response.PaginateResponse[kpay_response.PayTransactionResponse]{}, err
 	}
 
 	return queryRes, nil

@@ -32,3 +32,24 @@ type QueryTransactionRequest struct {
 type CancelTransactionRequest struct {
 	TransactionId string `json:"transactionId"`
 }
+
+type CreateVirtualAccountRequest struct {
+	Order         int64  `json:"order"`
+	Timeout       int64  `json:"timeout"`
+	FixAmount     int64  `json:"fixAmount"`
+	FixContent    string `json:"fixContent"`
+	BankAccountNo string `json:"bankAccountNo"`
+}
+
+type DisableVirtualAccountRequest struct {
+	Order int64 `json:"order"`
+}
+
+type GetTransactionRequest struct {
+	Size          int32  `json:"size"`
+	Page          int32  `json:"page"`
+	Order         int64  `json:"order"`
+	BankAccountNo string `json:"bankAccountNo"`
+	FromDate      string `json:"fromDate"`
+	ToDate        string `json:"toDate"`
+}

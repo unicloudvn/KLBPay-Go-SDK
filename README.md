@@ -6,7 +6,7 @@ sidebar_position: 5
 
 Thư viện người dùng tích hợp KLBPay vào hệ thống thanh toán của Merchant
 
-## Yêu cầu: GOLANG verson >= 1.18
+## Yêu cầu: GOLANG version >= 1.18
 
 # Install
 
@@ -25,7 +25,11 @@ Thông tin tích hợp bao gồm: Host, ClientId, SecretKey, EncryptKey
 ## Import sử dụng kpay-sdk
 
 ```
-import {Payment} from 'kpay-nodejs-sdk';
+import (
+	kpay_config "github.com/unicloudvn/KLBPay-Go-SDK/config"
+	kpay_service "github.com/unicloudvn/KLBPay-Go-SDK/service"
+	kpay_request "github.com/unicloudvn/KLBPay-Go-SDK/transaction/request"
+)
 ```
 
 ## Ví dụ cơ bản

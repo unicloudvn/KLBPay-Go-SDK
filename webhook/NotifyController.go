@@ -2,7 +2,6 @@ package webhook
 
 import (
 	"encoding/json"
-	"errors"
 	kpay_config "github.com/unicloudvn/KLBPay-Go-SDK/config"
 	kpay_security "github.com/unicloudvn/KLBPay-Go-SDK/security"
 	kpay_model "github.com/unicloudvn/KLBPay-Go-SDK/transaction/model"
@@ -78,7 +77,7 @@ func (notifyController *NotifyController) processNotifyTransactionRequest(client
 	_, err := kpay_security.Decode(notifyController.KPayConfig, &message, &requestRaw)
 
 	if err != nil {
-		return nil, errors.New(err.Error())
+		return nil, err
 	}
 	// Implement your business logic here
 	// ...

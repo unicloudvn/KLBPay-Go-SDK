@@ -233,6 +233,208 @@ response, err := kpay_service.GetTransaction(config, request)
 }
 ```
 
+## Call Webhook
+
+### Request Curl
+
+```
+curl --location --request GET '${YOUR_HOST}/notifyTransaction' \
+--header 'x-api-client: 5a404192-045b-4f6b-863f-192a0b9a88b4' \
+--header 'x-api-time: 1689925407435' \
+--header 'x-api-validate: 9757bbdbe1dc61e74cd8269126af130de9448e379d6bd12aed4443fea46cc5a0' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "data" :"qGckAOEvH9IqzQwxODueOmsMtLNUpVXdu/hbg0oPcV6K8ORAN2U/bGPC0OfrlyvN8h4mlCAIW3E94hFdiXGVv4bWbb4siQ5JSKuxQFw9lR/iiixcJ//RCFiGUY1cvkVx4zbpfIGchKGqEeay5wJZwy6V8YC/tvYqBN2zM/upfPQAlapxbvSF2ytW9AufUOe+TjPwe4xjVXx9x6/Ji8aB5sUCOeTzJ+j5D2YPtM6n8f25iUNgYN6eUhRm620aXDt1CmIhJYBUwa07kQN0UsxzC4Nq6FJVlgOz9auvyJrgcz9ym6p9l8KlS/pSKaMyERKP7FB72EpHZBUgbPGtkC8nv7oiEpiMszEw9JSwukOBBCdtBnjT6Xvk4CJUd8lX+Eg5rVhqkEqSvaPuDpPEVHFB6GqilF2o4avm7OGaphGP7fWmN714rA0rZ8rNxzTPdiTk88Wu1DYeeWd1w8RkNf8GGH30hbkRpsZ22UqKGDb00VxDgdArEeslkQOdFUGP9vtsqu4p79ps2e8Q0SA0ng8w9A=="
+}'
+```
+
+### 1. Implement interface HandleNotify:
+
+```
+type NotifyImpl struct {
+	webhook.HandleNotify
+}
+
+func (notifyImpl *NotifyImpl) Handle(request kpay_request.NotifyRequest) error {
+    // request đã được decode từ từ data encrypt
+    // Implement your business logic here
+
+    return nil
+}
+```
+
+### 2. Override method NotifyTransactionAPI trong NotifyController:
+
+```
+type NotifyTransactionImpl struct {
+	kpay_api.NotifyController
+}
+
+func (override *NotifyTransactionImpl) NotifyTransactionAPI(w http.ResponseWriter, r *http.Request){
+    // xử lí business logic cho...
+}
+```
+
+### 3. Ví dụ:
+
+- ### Implement interface HandleNotify
+
+```
+func main() {
+	clientId := "5a404192-045b-4f6b-863f-192a0b9a88b4"
+	encryptKey := "022E0BF1076030B6E64127107CC1BA576F643E08D2617E93DEB1D13AB1443896"
+	secretKey := "TZ4IYbmI6d/wvqMMCGV5u4CcE5+KDFJ+lTewp/LoRGDj94p6yFQ1k+/gMY1EXt9Tm80qRfu9BH+KCBoPwoIKs5WXKtsXpCa9vzmxcEyNW1qWwRpSWrNanOzpWRKzyZazWaziWu1A1TleeYYEUhhWZeqR42w2MX68Uu30n5tNGAwY5+Ctl1axCUzoNBC9czTXpzUNr/zIByW9RWW+BKJ6LNZv5V4HxzYesFmTTbcO9fgG5zTkTZ6s/H9n6NJ8UJFItOB5Rska7uYWmEDdkOx/5UGLrddjdHreYDIxUgTI5tHEwJM/1sXeM3N3rlqsJNBFqngA78PYypv6EUtNLFa9wQ=="
+
+	config := kpay_config.NewKPayConfig(
+		kpay_config.WithEncryptKey(encryptKey),
+		kpay_config.WithSecretKey(secretKey),
+		kpay_config.WithClientId(clientId),
+	)
+
+	handleNotify := NotifyImpl{}
+	controller := webhook.NotifyController{
+		HandleNotify: &handleNotify,
+		KPayConfig:   config,
+	}
+	r := mux.NewRouter()
+	r.HandleFunc("/test/notifyTransaction", controller.NotifyTransactionAPI)
+	http.ListenAndServe(":5557", r)
+}
+
+type NotifyImpl struct {
+	webhook.HandleNotify
+}
+
+func (notifyImpl *NotifyImpl) Handle(request kpay_request.NotifyRequest) error {
+	// request đã được decode từ từ data encrypt
+	// Implement your business logic here
+
+	jsonData, err := json.Marshal(request)
+	if err != nil {
+		return err
+	} else {
+		fmt.Println(string(jsonData))
+	}
+
+	return nil
+}
+
+```
+
+- ### Override method NotifyTransactionAPI trong NotifyController
+
+```
+
+func main() {
+	clientId := "5a404192-045b-4f6b-863f-192a0b9a88b4"
+	encryptKey := "022E0BF1076030B6E64127107CC1BA576F643E08D2617E93DEB1D13AB1443896"
+	secretKey := "TZ4IYbmI6d/wvqMMCGV5u4CcE5+KDFJ+lTewp/LoRGDj94p6yFQ1k+/gMY1EXt9Tm80qRfu9BH+KCBoPwoIKs5WXKtsXpCa9vzmxcEyNW1qWwRpSWrNanOzpWRKzyZazWaziWu1A1TleeYYEUhhWZeqR42w2MX68Uu30n5tNGAwY5+Ctl1axCUzoNBC9czTXpzUNr/zIByW9RWW+BKJ6LNZv5V4HxzYesFmTTbcO9fgG5zTkTZ6s/H9n6NJ8UJFItOB5Rska7uYWmEDdkOx/5UGLrddjdHreYDIxUgTI5tHEwJM/1sXeM3N3rlqsJNBFqngA78PYypv6EUtNLFa9wQ=="
+
+	config := kpay_config.NewKPayConfig(
+		kpay_config.WithEncryptKey(encryptKey),
+		kpay_config.WithSecretKey(secretKey),
+		kpay_config.WithClientId(clientId),
+	)
+
+	var name = NewNotifyTransactionImpl(config)
+	r := mux.NewRouter()
+	r.HandleFunc("/test/notifyTransaction", name.NotifyTransactionAPI)
+	http.ListenAndServe(":5557", r)
+}
+
+type NotifyTransactionImpl struct {
+	kpay_api.NotifyController
+}
+
+func (override *NotifyTransactionImpl) NotifyTransactionAPI(w http.ResponseWriter, r *http.Request) {
+	// Get headers
+	clientID := r.Header.Get("x-api-client")
+	signature := r.Header.Get("x-api-validate")
+	timestampStr := r.Header.Get("x-api-time")
+	timestamp, err := parseTimestamp(timestampStr)
+	if err != nil {
+		// Handle timestamp parsing error
+		http.Error(w, kpay_exception.InvalidParam.Message, http.StatusBadRequest)
+		return
+	}
+	// Decode data encrypt from request
+	var request kpay_request.BodyEncryptRequest
+	err = json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		// Handle request body parsing error
+		http.Error(w, kpay_exception.InvalidParam.Message, http.StatusBadRequest)
+		return
+	}
+
+	message := kpay_model.Message{
+		ClientId:     clientID,
+		ValidateData: signature,
+		Timestamp:    timestamp,
+		EncryptData:  request.Data,
+	}
+	var requestRaw kpay_request.NotifyRequest
+	_, err = kpay_security.Decode(override.KPayConfig, &message, &requestRaw)
+
+	if err != nil {
+		http.Error(w, kpay_exception.InvalidParam.Message, http.StatusBadRequest)
+		return
+	}
+	fmt.Println(requestRaw)
+
+	// xử lí business logic tại đây với dữ liệu đã được mã hoá
+	//...
+	//...
+	fmt.Println(clientID, signature, timestamp)
+
+
+	// xử lí business logic tại đây với dữ liệu đã được giải mã
+	//...
+	//...
+	fmt.Println(clientID, signature, timestamp)
+
+	// handle response
+	// Process the request and generate response
+	response := kpay_response.NotifyResponse{
+		Success: true,
+	}
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Serialize response to JSON
+	respJSON, err := json.Marshal(response)
+	if err != nil {
+		// Handle JSON serialization error
+		http.Error(w, "Failed to serialize response", http.StatusInternalServerError)
+		return
+	}
+
+	// Set response headers and write response
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(respJSON)
+}
+
+func parseTimestamp(timestampStr string) (int64, error) {
+	// Implement parsing logic for timestamp string
+	// For simplicity, let's assume timestampStr is a Unix timestamp in seconds
+	timestampInt, err := strconv.ParseInt(timestampStr, 10, 64)
+	if err != nil {
+		return 0, err
+	}
+	return timestampInt, nil
+}
+func NewNotifyTransactionImpl(config *kpay_config.KPayConfig) *NotifyTransactionImpl {
+	return &NotifyTransactionImpl{
+		kpay_api.NotifyController{
+			KPayConfig: config,
+		},
+	}
+}
+
+```
+
 ## Response Code
 
 <table>

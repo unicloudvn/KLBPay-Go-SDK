@@ -12,12 +12,21 @@ import (
 	"strconv"
 )
 
-type NotifyTransactionController struct {
-	HandleNotify HandleNotify
-	KPayConfig   *kpay_config.KPayConfig
+type HandleNotify interface {
+	Handle(request kpay_request.NotifyRequest) error
 }
 
-func (notifyController *NotifyTransactionController) NotifyTransactionAPI(w http.ResponseWriter, r *http.Request) {
+type INotifyController interface {
+	NotifyTransactionAPI(w http.ResponseWriter, r *http.Request)
+}
+
+type NotifyController struct {
+	INotifyController
+	HandleNotify
+	KPayConfig *kpay_config.KPayConfig
+}
+
+func (notifyController *NotifyController) NotifyTransactionAPI(w http.ResponseWriter, r *http.Request) {
 	// Get headers
 	clientID := r.Header.Get("x-api-client")
 	signature := r.Header.Get("x-api-validate")
@@ -40,7 +49,6 @@ func (notifyController *NotifyTransactionController) NotifyTransactionAPI(w http
 	// Process the request and generate response
 	response, err := notifyController.processNotifyTransactionRequest(clientID, signature, timestamp, request)
 	if err != nil {
-
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -59,7 +67,7 @@ func (notifyController *NotifyTransactionController) NotifyTransactionAPI(w http
 	w.Write(respJSON)
 }
 
-func (notifyController *NotifyTransactionController) processNotifyTransactionRequest(clientID string, signature string, timestamp int64, request kpay_request.BodyEncryptRequest) (*kpay_response.KPayBaseResponse[kpay_response.NotifyResponse], error) {
+func (notifyController *NotifyController) processNotifyTransactionRequest(clientID string, signature string, timestamp int64, request kpay_request.BodyEncryptRequest) (*kpay_response.KPayBaseResponse[kpay_response.NotifyResponse], error) {
 	message := kpay_model.Message{
 		ClientId:     clientID,
 		ValidateData: signature,
@@ -74,7 +82,10 @@ func (notifyController *NotifyTransactionController) processNotifyTransactionReq
 	}
 	// Implement your business logic here
 	// ...
-	notifyController.HandleNotify.Handle(requestRaw)
+	err = notifyController.HandleNotify.Handle(requestRaw)
+	if err != nil {
+		return nil, err
+	}
 
 	// Return a NotifyTransactionResponse wrapped in ResponseBase
 	response := kpay_response.NotifyResponse{
@@ -84,8 +95,6 @@ func (notifyController *NotifyTransactionController) processNotifyTransactionReq
 }
 
 func parseTimestamp(timestampStr string) (int64, error) {
-	// Implement parsing logic for timestamp string
-	// For simplicity, let's assume timestampStr is a Unix timestamp in seconds
 	timestampInt, err := strconv.ParseInt(timestampStr, 10, 64)
 	if err != nil {
 		return 0, err

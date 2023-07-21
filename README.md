@@ -379,17 +379,11 @@ func (override *NotifyTransactionImpl) NotifyTransactionAPI(w http.ResponseWrite
 		http.Error(w, kpay_exception.InvalidParam.Message, http.StatusBadRequest)
 		return
 	}
-	fmt.Println(requestRaw)
 
 	// xử lí business logic tại đây với dữ liệu đã được mã hoá
 	//...
 	//...
-	fmt.Println(clientID, signature, timestamp)
-
-
-	// xử lí business logic tại đây với dữ liệu đã được giải mã
-	//...
-	//...
+	fmt.Println(requestRaw)
 	fmt.Println(clientID, signature, timestamp)
 
 	// handle response

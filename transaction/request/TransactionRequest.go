@@ -53,3 +53,18 @@ type GetTransactionRequest struct {
 	FromDate      string `json:"fromDate"`
 	ToDate        string `json:"toDate"`
 }
+
+type NotifyRequest struct {
+	TransactionId    string `json:"transactionId"`
+	RefTransactionId string `json:"refTransactionId"`
+	VirtualAccount   string `json:"virtualAccount"`
+	ActualAccount    string `json:"actualAccount"`
+	FromBin          string `json:"fromBin"`
+	FromAccount      string `json:"fromAccount"`
+	Success          bool   `json:"success"`
+	Amount           int64  `json:"amount"`
+	StatusCode       string `json:"statusCode"`
+	TxnNumber        string `json:"txnNumber"`
+	TransferDesc     string `json:"transferDesc"`
+	Time             string `json:"time"` // yyyy-MM-dd HH:mm:ss
+}

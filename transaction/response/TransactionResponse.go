@@ -18,6 +18,10 @@ const (
 	BANKING = "BANKING"
 )
 
+type KPayBaseResponse[T any] struct {
+	Data T `json:"data"`
+}
+
 type CreateTransactionResponse struct {
 	TransactionId    string `json:"transactionId"`
 	RefTransactionId string `json:"refTransactionId"`
@@ -78,4 +82,8 @@ type PaginateResponse[T any] struct {
 	TotalSize  int32 `json:"totalSize"`
 	TotalPage  int32 `json:"totalPage"`
 	Items      []T   `json:"items"`
+}
+
+type NotifyResponse struct {
+	Success bool `json:"success"`
 }
